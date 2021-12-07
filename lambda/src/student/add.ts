@@ -7,7 +7,7 @@ import { StudentModel } from "/opt/nodejs/models/student";
 export const handler = async function (event: APIGatewayProxyEvent) {
   if (!event.body) {
     return ResponseUtil.requestError({
-      message: "no response body",
+      message: "no request body",
     });
   }
   const student = JSON.parse(event.body) as StudentModel;
