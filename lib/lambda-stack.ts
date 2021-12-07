@@ -12,7 +12,7 @@ export class LambdaStack extends Stack {
 
     const layer = new lambda.LayerVersion(this, "SharedLayer", {
       compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
-      code: lambda.Code.fromAsset("lambda/layer"),
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/layer")),
       layerVersionName: "SharedLayer",
     });
 
