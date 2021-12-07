@@ -14,8 +14,7 @@ export const handler = async function (event: APIGatewayProxyEvent) {
   const base64Data = student.icon.replace(/^data:image\/png;base64,/, "");
   const iconImage = Buffer.from(base64Data, "base64");
   const contentType = student.icon.substring(student.icon.indexOf(":") + 1, student.icon.indexOf(";base64"));
-  let extention = student.icon.substring(student.icon.indexOf("/") + 1, student.icon.indexOf(";base64"));
-  extention = extention.replace("+xml", "");
+  const extention = contentType.replace("image/", "");
   const iconName = `${student.id}.${extention}`;
 
   const s3Resp = await s3Client
