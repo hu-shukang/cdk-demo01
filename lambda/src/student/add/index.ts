@@ -1,8 +1,9 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { docClient, s3Client } from "/opt/nodejs/utils/clients";
-import { ResponseUtil } from "/opt/nodejs/utils/response_util";
+import { docClient, s3Client } from "/opt/nodejs/utils/clients.util";
+import { ResponseUtil } from "/opt/nodejs/utils/response.util";
 import { StudentModel } from "/opt/nodejs/models/student";
+import { base64ToImage } from "/opt/nodejs/utils/image.util";
 
 export const handler = async function (event: APIGatewayProxyEvent) {
   if (!event.body) {
@@ -11,15 +12,12 @@ export const handler = async function (event: APIGatewayProxyEvent) {
     });
   }
   const student = JSON.parse(event.body) as StudentModel;
-  const base64Data = student.icon.replace(/^data:image\/png;base64,/, "");
-  const iconImage = Buffer.from(base64Data, "base64");
-  const contentType = student.icon.substring(student.icon.indexOf(":") + 1, student.icon.indexOf(";base64"));
-  const extention = contentType.replace("image/", "");
+  const { data, extention, contentType } = base64ToImage(student.icon);
   const iconName = `${student.id}.${extention}`;
 
   const s3Resp = await s3Client
     .putObject({
-      Body: iconImage,
+      Body: data,
       Bucket: "hsk-student-bucket",
       ContentType: contentType,
       Key: iconName,
