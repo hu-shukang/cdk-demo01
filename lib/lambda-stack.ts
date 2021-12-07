@@ -10,6 +10,12 @@ export class LambdaStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const layer = new lambda.LayerVersion(this, "SharedLayer", {
+      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      code: lambda.Code.fromAsset("lambda/layer"),
+      layerVersionName: "SharedLayer",
+    });
+
     const studentTable = new Table(this, "student_tbl", {
       partitionKey: {
         name: "id",
@@ -22,15 +28,17 @@ export class LambdaStack extends Stack {
     const studentAdd = new lambda.Function(this, "student_add", {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: "add.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/student")),
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student")),
       functionName: "student_add",
+      layers: [layer],
     });
 
     const studentDetail = new lambda.Function(this, "student_detail", {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: "detail.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/student")),
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student")),
       functionName: "student_detail",
+      layers: [layer],
     });
 
     studentTable.grantWriteData(studentAdd);
