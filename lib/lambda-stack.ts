@@ -34,16 +34,16 @@ export class LambdaStack extends Stack {
 
     const studentAdd = new lambda.Function(this, "student_add", {
       runtime: lambda.Runtime.NODEJS_14_X,
-      handler: "add.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student")),
+      handler: "index.handler",
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student/add")),
       functionName: "student_add",
       layers: [layer],
     });
 
     const studentDetail = new lambda.Function(this, "student_detail", {
       runtime: lambda.Runtime.NODEJS_14_X,
-      handler: "detail.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student")),
+      handler: "index.handler",
+      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/src/student/detail")),
       functionName: "student_detail",
       layers: [layer],
     });
