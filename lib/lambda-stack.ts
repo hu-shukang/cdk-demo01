@@ -11,18 +11,21 @@ export class LambdaStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // lambda 共通レイヤー
     const layer = new lambda.LayerVersion(this, "shared_layer", {
       compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
       code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/layer")),
       layerVersionName: "shared_layer",
     });
 
+    // S3
     const studentBucket = new s3.Bucket(this, "hsk_student_bucket", {
       blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: false }),
       bucketName: "hsk-student-bucket",
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    // dynamodb table
     const studentTable = new Table(this, "student_tbl", {
       partitionKey: {
         name: "id",
@@ -32,6 +35,7 @@ export class LambdaStack extends Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    // lambda定義
     const studentAdd = new lambda.Function(this, "student_add", {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: "index.handler",
@@ -40,6 +44,7 @@ export class LambdaStack extends Stack {
       layers: [layer],
     });
 
+    // lambda定義
     const studentDetail = new lambda.Function(this, "student_detail", {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: "index.handler",
@@ -48,15 +53,19 @@ export class LambdaStack extends Stack {
       layers: [layer],
     });
 
+    // lambdaにdynamodbの権限を付与する
     studentTable.grantWriteData(studentAdd);
     studentTable.grantReadData(studentDetail);
 
+    // lambdaにs3の権限を付与する
     studentBucket.grantPutAcl(studentAdd);
     studentBucket.grantPut(studentAdd);
 
+    // Api Gateway定義
     const api = new apigateway.RestApi(this, "StudentApi", {
       restApiName: "student-api",
     });
+    // Api Gatewayにmethod&lambdaを追加する
     api.root.addMethod("POST", new apigateway.LambdaIntegration(studentAdd));
     api.root.addResource("{id}").addMethod("GET", new apigateway.LambdaIntegration(studentDetail, {}));
   }
