@@ -10,10 +10,10 @@ export class LambdaStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const layer = new lambda.LayerVersion(this, "SharedLayer", {
+    const layer = new lambda.LayerVersion(this, "shared_layer", {
       compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
       code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/layer")),
-      layerVersionName: "SharedLayer",
+      layerVersionName: "shared_layer",
     });
 
     const studentTable = new Table(this, "student_tbl", {

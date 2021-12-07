@@ -1,8 +1,8 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { docClient } from "/opt/nodejs/clients";
-import { ResponseUtil } from "/opt/nodejs/response_util";
-import { StudentModel } from "/opt/nodejs/student";
+import { docClient } from "/opt/nodejs/utils/clients";
+import { ResponseUtil } from "/opt/nodejs/utils/response_util";
+import { StudentModel } from "/opt/nodejs/models/student";
 
 export const handler = async function (event: APIGatewayProxyEvent) {
   if (!event.body) {
