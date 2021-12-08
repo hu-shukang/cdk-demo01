@@ -66,7 +66,8 @@ export class LambdaStack extends Stack {
       restApiName: "student-api",
     });
     // Api Gatewayにmethod&lambdaを追加する
-    api.root.addMethod("POST", new apigateway.LambdaIntegration(studentAdd));
-    api.root.addResource("{id}").addMethod("GET", new apigateway.LambdaIntegration(studentDetail, {}));
+    const studentApi = api.root.addResource("student");
+    studentApi.addMethod("POST", new apigateway.LambdaIntegration(studentAdd));
+    studentApi.addResource("{id}").addMethod("GET", new apigateway.LambdaIntegration(studentDetail, {}));
   }
 }
